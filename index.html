@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Reboot: Programmer's Comeback</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+
+    :root {
+      --terminal-bg: #1a1a1a;
+      --terminal-text: #00ff41;
+      --terminal-glow: rgba(0, 255, 65, 0.5);
+    }
+
+    body {
+      background-color: var(--terminal-bg);
+      color: var(--terminal-text);
+      font-family: 'Roboto Mono', 'Courier New', monospace;
+      font-size: 1.1rem;
+      margin: 0;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.3),
+        rgba(0, 0, 0, 0.3) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+      z-index: 999;
+    }
+    
+    #terminal {
+      width: 100%;
+      height: calc(100vh - 40px);
+      overflow-y: auto;
+      text-shadow: 0 0 5px var(--terminal-glow);
+      box-sizing: border-box;
+    }
+
+    .line {
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+
+    .prompt {
+      color: #7f8c8d;
+    }
+    
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      height: 1.2rem;
+      background-color: var(--terminal-text);
+      animation: blink 1s steps(2) infinite;
+      box-shadow: 0 0 10px var(--terminal-glow);
+      margin-right: 5px;
+    }
+
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    
+    a {
+      color: var(--terminal-text);
+      text-decoration: underline;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+    
+    a:hover {
+      background-color: var(--terminal-text);
+      color: var(--terminal-bg);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="terminal"></div>
+
+  <audio id="keyboard-sound" src="https://www.soundjay.com/communication/sounds/typewriter-1.mp3" preload="auto"></audio>
+
+  <script>
+    const terminal = document.getElementById('terminal');
+    const audio = document.getElementById('keyboard-sound');
+
+    const sequence = [
+      { text: 'system.reboot(programmer_mode=ON)', isCommand: true, delay: 1000 },
+      { text: 'Initializing comeback protocol...', isCommand: false, delay: 500 },
+      { text: 'Wiping old cache... [DONE]', isCommand: false, delay: 500 },
+      { text: 'Installing motivation_v2.1... [██████████] 100%', isCommand: false, delay: 800 },
+      { text: 'Compiling new skills... [IN PROGRESS]', isCommand: false, delay: 1000 },
+      { text: 'System ready.', isCommand: false, delay: 1500 },
+      { text: 'echo "Seif X DebiaN BacK!"', isCommand: true, delay: 1000 },
+      { text: 'Seif X DebiaN BacK! ', isCommand: false, delay: 2000, isBig: true },
+      { text: `
+    /\\
+   /  \\
+  /____\\
+  |    |
+  |    |
+  |    |
+  |    |
+  |    |
+  |    |
+ /|====|\\
+ /|    | \\
+  `, isCommand: false, isArt: true, delay: 500 },
+      { text: 'Launching journey...', isCommand: true, delay: 0 }
+    ];
+
+    async function type(lineElement, text) {
+      for (let char of text) {
+        lineElement.innerHTML += char;
+        audio.currentTime = 0;
+        audio.play().catch(e => {});
+        await new Promise(resolve => setTimeout(resolve, Math.random() * 80 + 20));
+      }
+    }
+
+    async function runSequence() {
+      terminal.innerHTML = '';
+      
+      for (const item of sequence) {
+        const line = document.createElement('div');
+        line.className = 'line';
+        
+        if (item.isCommand) {
+          line.innerHTML += '<span class="prompt">$ </span>';
+        }
+
+        if (item.isArt) {
+          line.style.whiteSpace = 'pre';
+        }
+
+        if (item.isBig) {
+          line.style.fontSize = '1.5rem';
+          line.style.fontWeight = 'bold';
+        }
+        
+        terminal.appendChild(line);
+
+        const textContainer = document.createElement('span');
+        line.appendChild(textContainer);
+
+        const cursor = document.createElement('span');
+        cursor.className = 'cursor';
+        line.appendChild(cursor);
+        
+        terminal.scrollTop = terminal.scrollHeight;
+
+        await type(textContainer, item.text);
+        
+        cursor.remove();
+        
+        await new Promise(resolve => setTimeout(resolve, item.delay));
+      }
+      
+      const finalLine = document.createElement('div');
+      finalLine.className = 'line';
+      finalLine.innerHTML = '<span class="prompt">$ </span><span class="cursor"></span>';
+      terminal.appendChild(finalLine);
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    runSequence();
+  </script>
+
+</body>
+</html>
